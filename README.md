@@ -11,68 +11,25 @@ Classes: 2 (1 = Spam, 0 = Not Spam).
 
 3. Models Used & Evaluation
 The following 6 classification models were implemented and evaluated:
-Logistic Regression
-Decision Tree Classifier
-K-Nearest Neighbors (KNN)
-Naive Bayes (Gaussian)
-Random Forest (Ensemble)
-XGBoost (Ensemble)
-Performance Comparison Table
-Model
-Accuracy
-AUC
-Precision
-Recall
-F1 Score
-MCC
-Logistic Regression
-0.9197
-0.9678
-0.9250
-0.8874
-0.9058
-0.8344
-Decision Tree
-0.9121
-0.9080
-0.8997
-0.8954
-0.8976
-0.8170
-KNN
-0.9023
-0.9410
-0.9150
-0.8418
-0.8769
-0.7960
-Naive Bayes
-0.8241
-0.9500
-0.7135
-0.9571
-0.8175
-0.6720
-Random Forest
-0.9555
-0.9880
-0.9634
-0.9250
-0.9438
-0.9070
-XGBoost
-0.9522
-0.9855
-0.9497
-0.9329
-0.9412
-0.8998
 
-(Note: These values are indicative. Run python3 train_models.py to get exact values for your specific execution run).
+Performance Comparison Table
+
+|ML Model Name|Accuracy|AUC|Precision|Recall|F1|MCC|
+|---|---|---|---|---|---|---|
+|Logistic Regression|0\.9000|0\.9236|0\.8500|0\.8947|0\.8718|0\.7906|
+|Decision Tree Classifier|0\.9800|0\.9737|1\.0000|0\.9474|0\.9730|0\.9580|
+|K-Nearest Neighbors (KNN)|0\.8400|0\.9304|0\.8235|0\.7368|0\.7778|0\.6558|
+|Naive Bayes (Gaussian)|0\.7800|0\.8778|0\.6429|0\.9474|0\.7660|0\.6109|
+|Random Forest (Ensemble)|1\.0000|1\.0000|1\.0000|1\.0000|1\.0000|1\.0000|
+|XGBoost (Ensemble)|0\.9800|1\.0000|1\.0000|0\.9474|0\.9730|0\.9580|
+
 Observations
-Random Forest and XGBoost performed the best overall, achieving the highest accuracy and MCC scores. This indicates that ensemble tree methods excel at capturing complex, non-linear feature interactions in linguistic data.
-Naive Bayes achieved an exceptionally high Recall but lower Precision, meaning it caught almost all spam but also misclassified some legitimate emails as spam.
-Logistic Regression yielded strong performance as a baseline model, confirming that the continuous frequency features have solid linear decision boundaries.
+1. Random Forest (Ensemble): Achieved perfect scores across all metrics (1.0000), making it the absolute best-performing model on this test set.
+2. XGBoost (Ensemble): Delivered exceptional results with 98% accuracy and perfect precision, generating zero false positives.
+3. Decision Tree Classifier: Matched XGBoost's high performance with 98% accuracy and 1.0000 precision, proving highly effective.
+4. Logistic Regression: Served as a strong linear baseline, achieving a solid 90% accuracy with well-balanced precision and recall.
+5. K-Nearest Neighbors (KNN): Showed moderate performance with 84% accuracy, struggling slightly compared to the tree-based models.
+6. Naive Bayes (Gaussian): Yielded the lowest accuracy (78%) and precision due to high false positives, despite catching most of the actual spam (high recall).
 
 4. Project Structure
 app.py: Streamlit frontend application.
@@ -80,7 +37,3 @@ train_models.py: Script to download data, train models, and generate artifacts.
 model/: Folder containing trained models (.pkl files) and scalers.
 requirements.txt: List of dependencies.
 
-5. How to Run Locally
-Install dependencies: pip3 install -r requirements.txt
-Train models: python3 train_models.py
-Run App: python3 -m streamlit run app.py
