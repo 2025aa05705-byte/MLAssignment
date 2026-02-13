@@ -15,6 +15,25 @@ st.markdown("Predict whether an email is Spam (1) or Not Spam (0) based on 57 wo
 # Sidebar
 st.sidebar.header("User Input")
 
+# 0. Download Sample Data
+base_dir = os.path.dirname(os.path.abspath(__file__))
+sample_csv_path = os.path.join(base_dir, 'sample_test_data.csv')
+
+# Fallback just in case the file was moved inside the model folder
+if not os.path.exists(sample_csv_path):
+    sample_csv_path = os.path.join(base_dir, 'model', 'sample_test_data.csv')
+
+if os.path.exists(sample_csv_path):
+    with open(sample_csv_path, "rb") as file:
+        st.sidebar.download_button(
+            label="📥 Download Sample Test Data",
+            data=file,
+            file_name="sample_test_data.csv",
+            mime="text/csv",
+            help="Download this sample file to test the application."
+        )
+        st.sidebar.markdown("---")
+
 # 1. Dataset Upload
 uploaded_file = st.sidebar.file_uploader("Upload CSV (Test Data)", type=["csv"])
 
