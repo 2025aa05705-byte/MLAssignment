@@ -4,7 +4,7 @@ import joblib
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_auc_score, precision_score, recall_score, f1_score, matthews_corrcoef
 
 # Page Config
 st.set_page_config(page_title="Spam Classification App", layout="wide")
@@ -33,8 +33,12 @@ selected_model_name = st.sidebar.selectbox("Select Classification Model", model_
 @st.cache_resource
 def load_resources():
     try:
-        le = joblib.load('model/label_encoder.pkl')
-        scaler = joblib.load('model/scaler.pkl')
+        # Use absolute paths so Streamlit always finds the folder regardless of terminal location
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_dir = os.path.join(base_dir, 'model')
+        
+        le = joblib.load(os.path.join(model_dir, 'label_encoder.pkl'))
+        scaler = joblib.load(os.path.join(model_dir, 'scaler.pkl'))
         models_loaded = {}
         model_files = {
             "Logistic Regression": "logistic_regression.pkl",
@@ -45,10 +49,10 @@ def load_resources():
             "XGBoost": "xgboost.pkl"
         }
         for name, filename in model_files.items():
-            models_loaded[name] = joblib.load(os.path.join('model', filename))
+            models_loaded[name] = joblib.load(os.path.join(model_dir, filename))
         return le, scaler, models_loaded
-    except FileNotFoundError:
-        st.error("Model files not found. Please run 'train_models.py' first.")
+    except FileNotFoundError as e:
+        st.error(f"Model files not found. Ensure the 'model' folder exists and contains the .pkl files. Detailed Error: {e}")
         return None, None, None
 
 le, scaler, models = load_resources()
@@ -84,6 +88,7 @@ if uploaded_file is not None and models:
     # Prediction
     model = models[selected_model_name]
     y_pred_encoded = model.predict(X_processed)
+    y_pred_prob = model.predict_proba(X_processed)[:, 1]
     y_pred_label = le.inverse_transform(y_pred_encoded)
 
     # Map labels to text for better display
@@ -102,9 +107,26 @@ if uploaded_file is not None and models:
         st.markdown("---")
         st.subheader("Model Performance Evaluation")
         
-        # Metrics
+        # Calculate Metrics
         acc = accuracy_score(y_true_encoded, y_pred_encoded)
-        st.metric("Accuracy", f"{acc:.4f}")
+        auc = roc_auc_score(y_true_encoded, y_pred_prob)
+        prec = precision_score(y_true_encoded, y_pred_encoded)
+        rec = recall_score(y_true_encoded, y_pred_encoded)
+        f1 = f1_score(y_true_encoded, y_pred_encoded)
+        mcc = matthews_corrcoef(y_true_encoded, y_pred_encoded)
+
+        # Display Metrics in a Grid
+        m_col1, m_col2, m_col3 = st.columns(3)
+        m_col1.metric("Accuracy", f"{acc:.4f}")
+        m_col2.metric("AUC Score", f"{auc:.4f}")
+        m_col3.metric("Precision", f"{prec:.4f}")
+
+        m_col4, m_col5, m_col6 = st.columns(3)
+        m_col4.metric("Recall", f"{rec:.4f}")
+        m_col5.metric("F1 Score", f"{f1:.4f}")
+        m_col6.metric("MCC Score", f"{mcc:.4f}")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
 
         col1, col2 = st.columns(2)
         
