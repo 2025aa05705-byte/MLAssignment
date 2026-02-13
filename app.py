@@ -7,10 +7,10 @@ import seaborn as sns
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 # Page Config
-st.set_page_config(page_title="Vehicle Classification App", layout="wide")
+st.set_page_config(page_title="Spam Classification App", layout="wide")
 
-st.title("🚗 Vehicle Silhouette Classification")
-st.markdown("Predict the type of vehicle (Opel, Saab, Bus, Van) based on geometric features.")
+st.title("📧 Spambase Email Classification")
+st.markdown("Predict whether an email is Spam (1) or Not Spam (0) based on 57 word/character frequency features.")
 
 # Sidebar
 st.sidebar.header("User Input")
@@ -61,12 +61,9 @@ if uploaded_file is not None and models:
     st.dataframe(df.head())
 
     # Preprocessing
-    # We expect the uploaded file to have the same features.
-    # If 'CLASS' is present (Ground Truth), we separate it.
     if 'CLASS' in df.columns:
         X_raw = df.drop('CLASS', axis=1)
         y_true = df['CLASS']
-        # Encode y_true for metrics
         try:
             y_true_encoded = le.transform(y_true)
             has_labels = True
@@ -89,9 +86,13 @@ if uploaded_file is not None and models:
     y_pred_encoded = model.predict(X_processed)
     y_pred_label = le.inverse_transform(y_pred_encoded)
 
+    # Map labels to text for better display
+    label_mapping = {1: "Spam", 0: "Not Spam"}
+    y_pred_text = [label_mapping.get(val, val) for val in y_pred_label]
+
     # Add predictions to dataframe
     results_df = df.copy()
-    results_df['Predicted_Class'] = y_pred_label
+    results_df['Predicted_Class'] = y_pred_text
     
     st.subheader(f"Results using {selected_model_name}")
     st.dataframe(results_df)
@@ -111,14 +112,17 @@ if uploaded_file is not None and models:
             st.write("**Confusion Matrix**")
             cm = confusion_matrix(y_true_encoded, y_pred_encoded)
             fig, ax = plt.subplots()
-            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=le.classes_, yticklabels=le.classes_)
+            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                        xticklabels=["Not Spam", "Spam"], 
+                        yticklabels=["Not Spam", "Spam"])
             plt.ylabel('Actual')
             plt.xlabel('Predicted')
             st.pyplot(fig)
 
         with col2:
             st.write("**Classification Report**")
-            report = classification_report(y_true_encoded, y_pred_encoded, target_names=le.classes_, output_dict=True)
+            report = classification_report(y_true_encoded, y_pred_encoded, 
+                                        target_names=["Not Spam", "Spam"], output_dict=True)
             st.dataframe(pd.DataFrame(report).transpose())
 
 else:
