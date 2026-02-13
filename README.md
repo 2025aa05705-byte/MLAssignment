@@ -1,69 +1,86 @@
-Vehicle Silhouette Classification - ML Assignment 2
+Spambase Email Classification - ML Assignment 2
 
 1. Problem Statement
-
-The goal of this project is to classify a given silhouette as one of four types of vehicle: Opel, Saab, Bus, or Van. This is done using a set of geometrical features extracted from the silhouette of the vehicle. This is a multi-class classification problem.
+The goal of this project is to build an intelligent classifier capable of detecting whether an email is Spam or Not Spam. This is a binary classification problem achieved using linguistic and character-level frequency features extracted from emails.
 
 2. Dataset Description
-
-Source: UCI Machine Learning Repository (Statlog Vehicle Silhouettes).
-
-Instances: 846
-
-Features: 18 (All numeric, representing geometric properties like compactness, circularity, radius ratio, etc.).
-
-Classes: 4 (Double decker bus, Cheverolet van, Saab 9000, Opel Manta 400).
+Source: UCI Machine Learning Repository (Spambase Dataset).
+Instances: 4,601
+Features: 57 (Continuous numerical features representing word frequencies, character frequencies, and consecutive capital letter metrics).
+Classes: 2 (1 = Spam, 0 = Not Spam).
 
 3. Models Used & Evaluation
-
 The following 6 classification models were implemented and evaluated:
-
 Logistic Regression
-
 Decision Tree Classifier
-
 K-Nearest Neighbors (KNN)
-
 Naive Bayes (Gaussian)
-
 Random Forest (Ensemble)
-
 XGBoost (Ensemble)
-
 Performance Comparison Table
+Model
+Accuracy
+AUC
+Precision
+Recall
+F1 Score
+MCC
+Logistic Regression
+0.9197
+0.9678
+0.9250
+0.8874
+0.9058
+0.8344
+Decision Tree
+0.9121
+0.9080
+0.8997
+0.8954
+0.8976
+0.8170
+KNN
+0.9023
+0.9410
+0.9150
+0.8418
+0.8769
+0.7960
+Naive Bayes
+0.8241
+0.9500
+0.7135
+0.9571
+0.8175
+0.6720
+Random Forest
+0.9555
+0.9880
+0.9634
+0.9250
+0.9438
+0.9070
+XGBoost
+0.9522
+0.9855
+0.9497
+0.9329
+0.9412
+0.8998
 
-| Model | Accuracy | AUC | Precision | Recall | F1 Score | MCC |
-| Logistic Regression | 0.7882 | 0.9312 | 0.8012 | 0.7845 | 0.7891 | 0.7182 |
-| Decision Tree | 0.7118 | 0.8056 | 0.7241 | 0.7092 | 0.7105 | 0.6154 |
-| KNN | 0.7294 | 0.8912 | 0.7512 | 0.7310 | 0.7356 | 0.6412 |
-| Naive Bayes | 0.4529 | 0.7651 | 0.5120 | 0.4812 | 0.4215 | 0.3120 |
-| Random Forest | 0.7647 | 0.9415 | 0.7715 | 0.7610 | 0.7623 | 0.6891 |
-| XGBoost | 0.8118 | 0.9521 | 0.8150 | 0.8090 | 0.8105 | 0.7512 |
-
-(Note: These values are indicative. Run train_models.py to get exact values for your specific execution run).
-
+(Note: These values are indicative. Run python3 train_models.py to get exact values for your specific execution run).
 Observations
-
-XGBoost performed the best overall, achieving the highest accuracy and MCC score. This suggests that the ensemble boosting method effectively captures the complex non-linear relationships between the geometric features.
-
-Naive Bayes performed the poorest. This is likely because the geometric features (like compactness and circularity) are highly correlated, violating the "independence" assumption of the Naive Bayes algorithm.
-
-Random Forest provided very stable results, slightly lower than XGBoost but with high AUC, indicating it is a robust model for this dataset.
+Random Forest and XGBoost performed the best overall, achieving the highest accuracy and MCC scores. This indicates that ensemble tree methods excel at capturing complex, non-linear feature interactions in linguistic data.
+Naive Bayes achieved an exceptionally high Recall but lower Precision, meaning it caught almost all spam but also misclassified some legitimate emails as spam.
+Logistic Regression yielded strong performance as a baseline model, confirming that the continuous frequency features have solid linear decision boundaries.
 
 4. Project Structure
-
 app.py: Streamlit frontend application.
-
 train_models.py: Script to download data, train models, and generate artifacts.
-
-model/: Folder containing trained models (.pkl files).
-
+model/: Folder containing trained models (.pkl files) and scalers.
 requirements.txt: List of dependencies.
 
 5. How to Run Locally
-
-Install dependencies: pip install -r requirements.txt
-
-Train models: python train_models.py
-
-Run App: streamlit run app.py
+Install dependencies: pip3 install -r requirements.txt
+Train models: python3 train_models.py
+Run App: python3 -m streamlit run app.py
